@@ -20,14 +20,17 @@
 #include "p2p.h"
 #include "server.h"
 #include "login.h"
+#include "host.h"
 #include "networkmanager.h"
+
+#define PAGE_COUNT  3
 
 //-------------------------------------------------------------------------------------------
 // Global Variables
 
 
 //Screen Variables
-typedef enum {MAIN_MENU, LOGIN, P2P, SERVER}SCREEN;
+typedef enum {MENU, HOST, JOIN, CHAT}SCREEN;
 SCREEN CurrentScreen;
 const int screenWidth = 1200;
 const int screenHeight = 650;
@@ -47,16 +50,19 @@ int main(void){
     InitWindow(screenWidth, screenHeight, "Link Chat");
     SetTargetFPS(60);
 
+
+    MAIN_MENU menu;
+    HOST_PAGE host;
+
     //Set the screen to login page
-    InitializeLogin();
-    CurrentScreen = LOGIN;
+    InitializeMainMenu(&menu);
+    CurrentScreen = MENU;
 
     //Open connection to server
-    server = OpenConnection(SERVER_PORT, SERVER_IP);
+    //server = OpenConnection(SERVER_PORT, SERVER_IP);
 
     int result;
     bool UserQuit = false;
-
 
     //--------------------------------------------------------------------------------------
 
@@ -66,57 +72,42 @@ int main(void){
         // Update
         //----------------------------------------------------------------------------------
         switch (CurrentScreen) {
-
-            case LOGIN: {
-                result = UpdateLogin(server);
-                if(result == 1){
-                    UnInitializeLogin();
-                    InitializeMainMenu();
-                    CurrentScreen = MAIN_MENU;
-                }
-                if(result == 2){
-                    UnInitializeLogin();
-                    UserQuit = true;
-                }
-                break;
-            }
-
-            case MAIN_MENU:{
-                result = UpdateMainMenu();
+            case MENU:{
+                result = UpdateMainMenu(&menu);
                 if(result == 1) {
-                    UnInitializeMainMenu();
-                    InitializeP2P();
-                    CurrentScreen = P2P;
+                    UnInitializeMainMenu(&menu);
+                    InitializeHost(&host);
+                    CurrentScreen = HOST;
                 }
                 else if(result == 2){
-                    UnInitializeMainMenu();
-                    InitializeServer();
-                    CurrentScreen = SERVER;
+                    UnInitializeMainMenu(&menu);
+
+                    CurrentScreen = JOIN;
                 }
                 else if(result == 3){
-                    UnInitializeMainMenu();
+                    UnInitializeMainMenu(&menu);
                     UserQuit = true;
                 }
                 break;
             }
 
-            case P2P:{
-                result = UpdateP2P();
+            case HOST:{
+                result = UpdateHost(&host);
                 if(result == 1){
-                    UnInitializeP2P();
-                    InitializeMainMenu();
-                    CurrentScreen = MAIN_MENU;
+                    UnInitializeHost(&host);
+                    InitializeMainMenu(&menu);
+                    CurrentScreen = MENU;
                 }
                 break;
             }
 
-            case SERVER:{
-                result = UpdateServer(server);
-                if(result == 1){
-                    UnInitializeServer();
-                    InitializeMainMenu();
-                    CurrentScreen = MAIN_MENU;
-                }
+            case JOIN:{
+
+                break;
+            }
+
+            case CHAT:{
+
                 break;
             }
 
@@ -128,21 +119,20 @@ int main(void){
         // Draw
         //----------------------------------------------------------------------------------
         switch (CurrentScreen) {
+            case MENU:{
+                DrawMainMenu(&menu);
+                break;
+            }
+            case HOST:{
+                DrawHost(&host);
+                break;
+            }
+            case JOIN:{
 
-            case LOGIN: {
-                DrawLogin(server);
                 break;
             }
-            case MAIN_MENU:{
-                DrawMainMenu();
-                break;
-            }
-            case P2P:{
-                DrawP2P();
-                break;
-            }
-            case SERVER:{
-                DrawServer();
+            case CHAT:{
+
                 break;
             }
 
@@ -153,9 +143,9 @@ int main(void){
     // De-Initialization
     //--------------------------------------------------------------------------------------
     CloseWindow();        // Close window and OpenGL context
-    UnInitializeMainMenu();
+    UnInitializeMainMenu(&menu);
     UnInitializeServer();
-    CloseConnection(server);
+    //CloseConnection(server);
     //--------------------------------------------------------------------------------------
 
 	return 0;

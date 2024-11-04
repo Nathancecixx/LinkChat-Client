@@ -1,3 +1,6 @@
+#ifndef LINKCHAT_BUTTON_H
+#define LINKCHAT_BUTTON_H
+
 #include "raylib.h"
 
 #define MAX_BUTTON_TEXT     15
@@ -33,3 +36,5 @@ bool CheckButton(BUTTON* button);
 
 //D
 void DestroyButton(BUTTON b);
+
+#endif

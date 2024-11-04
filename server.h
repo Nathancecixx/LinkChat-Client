@@ -1,3 +1,6 @@
+#ifndef LINKCHAT_SERVER_H
+#define LINKCHAT_SERVER_H
+
 #include <stdbool.h>
 
 void InitializeServer();
@@ -17,3 +20,5 @@ int UpdateServerMenu(int server);
 void DrawServerMenu();
 
 void UnInitializeServerMenu();
+
+#endif

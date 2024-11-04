@@ -133,6 +133,78 @@ bool ReceiveOverConnection(int Socket, char* DestBuffer){
     }
 }
 
+bool SendMsgOverConnection(int Socket, const char* Message){
+    if(!Message)
+        return false;
+
+    u_long messageLength = strlen(Message);
+    u_long networkOrderNum = htonl(messageLength);
+
+    if(send(Socket, (char*)&networkOrderNum, sizeof(networkOrderNum), 0) == -1){
+        printf("ERROR: Failed to send message size\n");
+        return false;
+    }
+
+    if(send(Socket, Message, sizeof(Message), 0) == -1){
+        printf("ERROR: Failed to send actual message\n");
+        return false;
+    }
+
+    return true;
+
+}
+
+bool RecieveMessage(int Socket){
+
+    char * DestBuffer;
+    int DestSize;
+
+
+    //RecMsdOverConnection(Socket, DestBuffer, DestSize);
+
+
+}
+
+
+bool RecMsgOverConnection(int Socket, char* DestBuffer, int* DestSize){
+
+    int buffLength, networkOrderNum;
+
+    int bytesReceived1 = recv(Socket, (char *)&networkOrderNum, sizeof(networkOrderNum), 0);
+
+    if (bytesReceived1 == sizeof(networkOrderNum)) {
+        buffLength = ntohl(networkOrderNum);  // Convert from network byte order to host byte order
+        printf("Received size of: %d\n", buffLength);
+    } else {
+        printf("ERROR: Failed to receive size of message\n");
+        return false;
+    }
+
+    DestBuffer = malloc(sizeof(buffLength) + 1);
+    if(DestBuffer == NULL){
+        printf("ERROR: Failed to malloc message memory\n");
+        return false;
+    }
+
+    *DestSize = buffLength;
+
+    int bytesReceived2 = recv(Socket, DestBuffer, sizeof(buffLength), 0);
+
+    if (bytesReceived2 > 0) {
+        DestBuffer[bytesReceived2] = '\0';
+    } else if (bytesReceived2 == 0) {
+        printf("Peer socket closed the connection.\n");
+        if(DestBuffer) free(DestBuffer);
+        return false;
+    } else {
+        perror("ERROR: recv error\n");
+        free(DestBuffer);
+        return false;
+    }
+
+    return true;
+}
+
 bool CloseConnection(int Socket){
 
 #ifdef _WIN32

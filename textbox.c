@@ -5,6 +5,15 @@
 
 #include "textbox.h"
 
+
+// Define timing constants
+const float BACKSPACE_INITIAL_DELAY = 0.5f;  // Initial delay before continuous deletion (in seconds)
+const float BACKSPACE_REPEAT_RATE = 0.05f;   // Repeat rate for continuous deletion (in seconds)
+
+// Define a timer and a flag
+float backspaceTimer = 0.0f;
+bool backspaceHeld = false;
+
 //C
 TEXT_BOX CreateTextBox(float X, float Y, float Width, float Height, Color RectColor, Color TextColor){
     TEXT_BOX tb;
@@ -125,11 +134,34 @@ bool UpdateTextBox(TEXT_BOX* tb){
         tb->charCount++;
     }
 
-    if (IsKeyPressed(KEY_BACKSPACE))
-    {
+
+    if (IsKeyPressed(KEY_BACKSPACE)) {
         tb->charCount--;
         if (tb->charCount < 0) tb->charCount = 0;
         tb->text[tb->charCount] = '\0';
+        backspaceHeld = true;          // Start holding the backspace
+        backspaceTimer = BACKSPACE_INITIAL_DELAY;  // Set the initial delay
+    }
+
+    // Check if the backspace key is still held down
+    if (IsKeyDown(KEY_BACKSPACE)) {
+        if (backspaceHeld) {
+            // Update the timer with the frame time
+            backspaceTimer -= GetFrameTime();
+
+            // Check if the timer has elapsed for the next deletion
+            if (backspaceTimer <= 0.0f) {
+                tb->charCount--;
+                if (tb->charCount < 0) tb->charCount = 0;
+                tb->text[tb->charCount] = '\0';
+
+                // Reset the timer for the next character deletion
+                backspaceTimer = BACKSPACE_REPEAT_RATE;
+            }
+        }
+    } else {
+        // Reset the backspace hold flag when the key is released
+        backspaceHeld = false;
     }
 
     return true;

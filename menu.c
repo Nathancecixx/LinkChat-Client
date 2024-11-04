@@ -1,61 +1,51 @@
-#include "raylib.h"
 #include "menu.h"
-#include "button.h"
-
-#include <stdio.h>
-
-#define VERSION     "1.1.0"
-
-static BUTTON buttonOne;
-static BUTTON buttonTwo;
-static BUTTON buttonThree;
 
 
-static Texture2D Background;
-static const Vector2 BackgroundVector = {0, 0};
-
-void InitializeMainMenu(){
+void InitializeMainMenu(MAIN_MENU* menu){
 
 //    Continue button
-    buttonOne = CreateButton (((float) GetScreenWidth()/2) - (500.0f / 2),
-                              ((float) GetScreenHeight()/2) - 100,
-                             500,
-                             100,
-                             DARKGRAY,
-                             BLACK,
-                             "P2P");
+    float buttonCenterX = ((float) GetScreenWidth()/2) - (500.0f / 2);
+    float buttonCenterY = (float) GetScreenHeight()/2;
 
-    buttonTwo = CreateButton (((float) GetScreenWidth()/2) - (500.0f / 2),
-                              ((float) GetScreenHeight()/2) + 50,
-                              500,
-                              100,
-                              DARKGRAY,
-                              BLACK,
-                              "Server");
+    menu->buttons[0] = CreateButton (buttonCenterX,
+                                     buttonCenterY - 100,
+                                     500,
+                                     100,
+                                 DARKGRAY,
+                                 BLACK,
+                                 "Host");
 
-    buttonThree = CreateButton (((float) GetScreenWidth()/2) - (500.0f / 2),
-                              ((float) GetScreenHeight()/2) + 200,
-                              500,
-                              100,
-                              DARKGRAY,
-                              BLACK,
-                              "Quit");
+    menu->buttons[1] = CreateButton (buttonCenterX,
+                                     buttonCenterY + 50,
+                                     500,
+                                     100,
+                                     DARKGRAY,
+                                     BLACK,
+                                     "Join");
+
+    menu->buttons[2] = CreateButton (buttonCenterX,
+                                  buttonCenterY + 200,
+                                  500,
+                                  100,
+                                  DARKGRAY,
+                                  BLACK,
+                                  "Quit");
 
 }
 
-int UpdateMainMenu() {
+int UpdateMainMenu(MAIN_MENU* menu) {
 
-    if(CheckButton(&buttonOne)){
-        printf("P2P Pressed!\n");
+    if(CheckButton(&menu->buttons[0])){
+        printf("Host Pressed!\n");
         return 1;
     }
 
-    if(CheckButton(&buttonTwo)) {
-        printf("Server Pressed!\n");
+    if(CheckButton(&menu->buttons[1])) {
+        printf("Join Pressed!\n");
         return 2;
     }
 
-    if(CheckButton(&buttonThree)) {
+    if(CheckButton(&menu->buttons[2])) {
         printf("exit pressed!\n");
         return 3;
     }
@@ -64,7 +54,7 @@ int UpdateMainMenu() {
 }
 
 
-void DrawMainMenu(){
+void DrawMainMenu(const MAIN_MENU* menu){
     BeginDrawing();
 
     ClearBackground(LIGHTGRAY);
@@ -88,15 +78,14 @@ void DrawMainMenu(){
 
 
 //    Continue button
-    DrawButton(buttonOne);
-    DrawButton(buttonTwo);
-    DrawButton(buttonThree);
+    for(int i = 0; i < BTN_COUNT; i++){
+        DrawButton(menu->buttons[i]);
+    };
 
     EndDrawing();
 }
 
 
-void UnInitializeMainMenu(){
-    //UnloadTexture(Background);
+void UnInitializeMainMenu(MAIN_MENU* menu){
     return;
 }
