@@ -1,3 +1,6 @@
+#ifndef LINKCHAT_TEXTFIELD_H
+#define LINKCHAT_TEXTFIELD_H
+
 #include <stdbool.h>
 
 #include "raylib.h"
@@ -44,3 +47,5 @@ bool AddMessageToTextField(TEXT_FIELD* tf, char* Name, char* Message);
 
 //D
 void DestroyTextField(TEXT_FIELD* tf);
+
+#endif

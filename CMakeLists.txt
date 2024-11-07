@@ -20,6 +20,18 @@ set(SOURCES
         textfield.c
         host.c
         host.h
+        message_queue.c
+        message_queue.h
+        join.c
+        join.h
+        encrypter.c
+        encrypter.h
+        base58.c
+        base58.c
+        base58.h
+        client_list_view.c
+        client_list_view.h
+        client_list_view.c   # Add base64.c here
 )
 
 # Include directories
@@ -32,11 +44,18 @@ include(FetchContent)
 FetchContent_Declare(
         raylib
         GIT_REPOSITORY https://github.com/raysan5/raylib.git
-        GIT_TAG 5.0  # Specify the version or branch of raylib you want
+        GIT_TAG 5.0  # Specify the version or branch of Raylib you want
 )
 
-# Build Raylib if not already available
-FetchContent_MakeAvailable(raylib)
+# Fetch tiny-AES-c
+FetchContent_Declare(
+        tiny-aes-c
+        GIT_REPOSITORY https://github.com/kokke/tiny-AES-c.git
+        GIT_TAG master
+)
+
+# Build dependencies if not already available
+FetchContent_MakeAvailable(raylib tiny-aes-c)
 
 # Platform-specific settings
 if (WIN32)
@@ -49,6 +68,17 @@ endif()
 
 # Add executable
 add_executable(LinkChat ${SOURCES})
+
+# Include directories for dependencies
+target_include_directories(LinkChat PRIVATE
+        ${raylib_SOURCE_DIR}/src
+        ${tiny-aes-c_SOURCE_DIR}
+)
+
+# Add the tiny-AES-c source files
+target_sources(LinkChat PRIVATE
+        ${tiny-aes-c_SOURCE_DIR}/aes.c
+)
 
 # Link Raylib and platform-specific libraries
 target_link_libraries(LinkChat raylib ${PLATFORM_LIBS})

@@ -94,7 +94,7 @@ int UpdateServer(int server){
         strcpy(message, "@");
         strcat(message, ClientTextBox.text);
 
-        SendOverConnection(server, message);
+        //SendOverConnection(server, message);
         AddMessageToTextField(&ClientTextField, "Nathan", ClientTextBox.text);
         SetTextBoxText(&ClientTextBox, "\0");
     }
@@ -102,19 +102,19 @@ int UpdateServer(int server){
     if(server == -1)
         return 0;
 
-    UpdateTextFieldScroll(&ClientTextField);
-
-    char test [25] = {0};
-    if(CheckSocketActivity(server)){
-        ReceiveOverConnection(server, &test[0]);
-        AddMessageToTextField(&ClientTextField, "SERVER: ", test);
-        printf("IF PASSED - %s\n", test);
-    }
+//    UpdateTextFieldScroll(&ClientTextField);
+//
+//    char test [25] = {0};
+//    if(CheckSocketActivity(server)){
+//        //ReceiveOverConnection(server, &test[0]);
+//        AddMessageToTextField(&ClientTextField, "SERVER: ", test);
+//        printf("IF PASSED - %s\n", test);
+//    }
 
     return 0;
 }
 
-void DrawServer(){
+int DrawServer(){
     BeginDrawing();
 
     if(!IsInRoom){
@@ -208,27 +208,27 @@ void InitializeServerMenu(){
 int UpdateServerMenu(int server){
     if(CheckButton(&RoomOne)){
         char message [MAX_MESSAGE_LENGTH]= "$0";
-        SendOverConnection(server, message);
+        //SendOverConnection(server, message);
         return 1;
     }
     if(CheckButton(&RoomTwo)){
         char message[MAX_MESSAGE_LENGTH] = "$1";
-        SendOverConnection(server, message);
+        //SendOverConnection(server, message);
         return 2;
     }
     if(CheckButton(&RoomThree)){
         char message[MAX_MESSAGE_LENGTH] = "$2";
-        SendOverConnection(server, message);
+        //SendOverConnection(server, message);
         return 3;
     }
     if(CheckButton(&RoomFour)){
         char message[MAX_MESSAGE_LENGTH] = "$3";
-        SendOverConnection(server, message);
+        //SendOverConnection(server, message);
         return 4;
     }
     if(CheckButton(&RoomFive)){
         char message[MAX_MESSAGE_LENGTH] = "$4";
-        SendOverConnection(server, message);
+        //SendOverConnection(server, message);
         return 5;
     }
 

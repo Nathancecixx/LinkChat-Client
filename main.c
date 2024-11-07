@@ -21,9 +21,12 @@
 #include "server.h"
 #include "login.h"
 #include "host.h"
+#include "join.h"
 #include "networkmanager.h"
 
-#define PAGE_COUNT  3
+#include "message_queue.h"
+
+MessageQueue* g_messageQueue;
 
 //-------------------------------------------------------------------------------------------
 // Global Variables
@@ -50,12 +53,21 @@ int main(void){
     InitWindow(screenWidth, screenHeight, "Link Chat");
     SetTargetFPS(60);
 
+    char ip[16]; // For IPv4
 
-    MAIN_MENU menu;
-    HOST_PAGE host;
+    if (GetActiveIp(ip, sizeof(ip)) == 0) {
+        printf("Local IP address used for outgoing connections: %s\n", ip);
+    } else {
+        fprintf(stderr, "Failed to retrieve local IP address.\n");
+    }
+
+
+    MAIN_MENU menuPage;
+    HOST_PAGE hostPage;
+    JOIN_PAGE joinPage;
 
     //Set the screen to login page
-    InitializeMainMenu(&menu);
+    InitializeMainMenu(&menuPage);
     CurrentScreen = MENU;
 
     //Open connection to server
@@ -73,36 +85,41 @@ int main(void){
         //----------------------------------------------------------------------------------
         switch (CurrentScreen) {
             case MENU:{
-                result = UpdateMainMenu(&menu);
+                result = UpdateMainMenu(&menuPage);
                 if(result == 1) {
-                    UnInitializeMainMenu(&menu);
-                    InitializeHost(&host);
+                    UnInitializeMainMenu(&menuPage);
+                    InitializeHost(&hostPage);
                     CurrentScreen = HOST;
                 }
                 else if(result == 2){
-                    UnInitializeMainMenu(&menu);
-
+                    UnInitializeMainMenu(&menuPage);
+                    InitializeJoin(&joinPage);
                     CurrentScreen = JOIN;
                 }
                 else if(result == 3){
-                    UnInitializeMainMenu(&menu);
+                    UnInitializeMainMenu(&menuPage);
                     UserQuit = true;
                 }
                 break;
             }
 
             case HOST:{
-                result = UpdateHost(&host);
+                result = UpdateHost(&hostPage);
                 if(result == 1){
-                    UnInitializeHost(&host);
-                    InitializeMainMenu(&menu);
+                    UnInitializeHost(&hostPage);
+                    InitializeMainMenu(&menuPage);
                     CurrentScreen = MENU;
                 }
                 break;
             }
 
             case JOIN:{
-
+                result = UpdateJoin(&joinPage);
+                if(result == 1){
+                    UnInitializeHost(&hostPage);
+                    InitializeMainMenu(&menuPage);
+                    CurrentScreen = MENU;
+                }
                 break;
             }
 
@@ -120,15 +137,15 @@ int main(void){
         //----------------------------------------------------------------------------------
         switch (CurrentScreen) {
             case MENU:{
-                DrawMainMenu(&menu);
+                DrawMainMenu(&menuPage);
                 break;
             }
             case HOST:{
-                DrawHost(&host);
+                DrawHost(&hostPage);
                 break;
             }
             case JOIN:{
-
+                DrawJoin(&joinPage);
                 break;
             }
             case CHAT:{
@@ -143,7 +160,7 @@ int main(void){
     // De-Initialization
     //--------------------------------------------------------------------------------------
     CloseWindow();        // Close window and OpenGL context
-    UnInitializeMainMenu(&menu);
+    UnInitializeMainMenu(&menuPage);
     UnInitializeServer();
     //CloseConnection(server);
     //--------------------------------------------------------------------------------------

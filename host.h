@@ -1,27 +1,31 @@
+#ifndef HOST_H
+#define HOST_H
 
-#ifndef LINKCHAT_HOST_H
-#define LINKCHAT_HOST_H
-
-#include <stdbool.h>
-
+#include "raylib.h"
+#include "networkmanager.h"
+#include "message_queue.h"
+#include "button.h"
 #include "textbox.h"
 #include "textfield.h"
-#include "button.h"
-#include "networkmanager.h"
+#include "client_list_view.h"
+
+// Include other necessary headers and definitions
 
 typedef struct {
+    // GUI components
     BUTTON BackButton;
-    BUTTON SendButton;
     TEXT_BOX ClientTextBox;
     TEXT_FIELD ClientTextField;
-}HOST_PAGE;
+    BUTTON SendButton;
+    CLIENT_LIST ClientListView;
+
+    int ServerSocket;
+    char* CodeBuffer;
+} HOST_PAGE;
 
 void InitializeHost(HOST_PAGE* host);
-
 int UpdateHost(HOST_PAGE* host);
-
 void DrawHost(const HOST_PAGE* host);
-
 void UnInitializeHost(HOST_PAGE* host);
 
-#endif //LINKCHAT_HOST_H
+#endif // HOST_H

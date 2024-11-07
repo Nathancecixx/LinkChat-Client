@@ -1,3 +1,6 @@
+#ifndef LINKCHAT_TEXTBOX_H
+#define LINKCHAT_TEXTBOX_H
+
 #include <stdbool.h>
 
 #include "raylib.h"
@@ -40,3 +43,4 @@ bool CheckTextBox(TEXT_BOX* tb);
 
 //D
 void DestroyTextBox(TEXT_BOX* tb);
+#endif

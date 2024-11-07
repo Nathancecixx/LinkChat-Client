@@ -7,7 +7,7 @@ void InitializeServer();
 
 int UpdateServer(int server);
 
-void DrawServer();
+int DrawServer();
 
 void UnInitializeServer();
 
